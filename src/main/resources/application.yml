@@ -1,0 +1,8 @@
+server:
+  port: 8090
+  proxy:
+    port: 1818
+
+category:
+  file:
+    loc: store/categories.json

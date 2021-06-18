@@ -1,0 +1,17 @@
+[
+  {
+    "blocked": true,
+    "name": "videos",
+    "sites": ["youtube.com","vimeo.com","googlevideo.com"]
+  },
+  {
+    "blocked": true,
+    "name": "games",
+    "sites": []
+  },
+  {
+    "blocked": false,
+    "name": "other",
+    "sites": []
+  }
+]
