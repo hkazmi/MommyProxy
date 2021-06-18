@@ -2,7 +2,7 @@ server:
   port: 8090
   proxy:
     port: 1818
-
+  timezone: America/New_York
 category:
   file:
     loc: store/categories.json

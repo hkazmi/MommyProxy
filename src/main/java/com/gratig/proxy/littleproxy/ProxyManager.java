@@ -20,10 +20,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Component
@@ -32,7 +36,6 @@ public class ProxyManager {
     private final ObjectMapper mapper = new ObjectMapper();
     private boolean enabled=true;
     private LocalTime startBlock = LocalTime.of(15,40);
-//    private LocalTime endBlock = LocalTime.of(8,0);
 
     public List<Category> getBlocks() {
         return blocks;
@@ -53,17 +56,21 @@ public class ProxyManager {
     private List<Category> blocks = Collections.synchronizedList(new ArrayList<>());
     private HttpProxyServer server;
 
-    public ProxyManager(@Value("${server.proxy.port}") int port, @Value("${category.file.loc}") String fileLoc) throws IOException {
+    public ProxyManager(@Value("${server.proxy.port}") int port,
+                        @Value("${server.timezone}") String zone,
+                        @Value("${category.file.loc}") String fileLoc) throws IOException {
         load(fileLoc);
+        log.info("Blocking starts at: " + startBlock + ", now it is " + LocalTime.now(ZoneId.of(zone)));
         this.server =
                 DefaultHttpProxyServer.bootstrap()
-                        .withPort(port)
+                        .withAddress(new InetSocketAddress("0.0.0.0", port))
+//                        .withPort(port)
                         .withFiltersSource(new HttpFiltersSourceAdapter() {
                             public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
                                 return new HttpFiltersAdapter(originalRequest) {
                                     @Override
                                     public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-                                        if(LocalTime.now().isBefore(startBlock)) {
+                                        if(LocalTime.now(ZoneId.of(zone)).isBefore(startBlock)) {
                                             return null;
                                         }
 
