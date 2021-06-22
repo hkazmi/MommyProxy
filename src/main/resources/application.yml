@@ -6,3 +6,8 @@ server:
 category:
   file:
     loc: store/categories.json
+
+logging:
+  level:
+    ROOT: INFO
+    com.gratig.proxy.littleproxy: DEBUG

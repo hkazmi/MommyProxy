@@ -40,7 +40,7 @@ public class ProxyController {
     }
 
     @PostMapping("categories")
-    public void setCategories(List<Category> categories, @Parameter(hidden = true) @Value("${category.file.loc}") String fileLoc) throws IOException {
+    public void setCategories(@Parameter(hidden = true) @Value("${category.file.loc}") String fileLoc, List<Category> categories) throws IOException {
         List<Category> blocks = proxy.getBlocks();
         blocks.clear();
         blocks.addAll(categories);

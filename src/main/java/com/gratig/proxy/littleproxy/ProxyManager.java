@@ -70,24 +70,27 @@ public class ProxyManager {
                                 return new HttpFiltersAdapter(originalRequest) {
                                     @Override
                                     public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-                                        if(LocalTime.now(ZoneId.of(zone)).isBefore(startBlock)) {
+                                        LocalTime nowNow = LocalTime.now(ZoneId.of(zone));
+                                        if(nowNow.isBefore(startBlock)) {
                                             return null;
                                         }
 
                                         if (httpObject instanceof HttpRequest && enabled) {
                                             HttpRequest request = (HttpRequest) httpObject;
                                             String uri = request.uri();
-                                            log.info(uri);
-                                            if (clean(uri).endsWith(".io") || blocks.stream()
+                                            String cleanUri = clean(uri);
+                                            log.debug("URI attempt: " + uri + ", cleaning it : " + cleanUri + " at " + nowNow);
+                                            if (cleanUri.endsWith(".io") || blocks.stream()
                                                     .filter(Category::isBlocked)
                                                     .map(Category::getSites)
                                                     .flatMap(Set::stream)
                                                     .anyMatch(x -> uri.toLowerCase().contains(x))) {
+                                                log.info("Blocking: " + cleanUri + " at " + nowNow);
                                                 return getBadGatewayResponse();
                                             } else {
+                                                log.debug("Letting threw: " + cleanUri + " at " + nowNow);
                                                 blocks.stream().filter(c -> c.getName().equals("other")).findFirst().ifPresent(o ->
                                                 {
-                                                    String cleanUri = clean(uri);
                                                     if(cleanUri != null) {
                                                         o.getSites().add(cleanUri);
                                                     }
