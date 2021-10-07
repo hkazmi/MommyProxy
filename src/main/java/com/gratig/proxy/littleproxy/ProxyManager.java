@@ -6,6 +6,7 @@ import com.gratig.proxy.entity.Category;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import io.netty.handler.codec.http.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -67,9 +68,10 @@ public class ProxyManager {
 //                        .withPort(port)
                         .withFiltersSource(new HttpFiltersSourceAdapter() {
                             public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
-                                return new HttpFiltersAdapter(originalRequest) {
+                                return new HttpFiltersAdapter(originalRequest, ctx) {
                                     @Override
                                     public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+                                        String channel = ctx.channel().toString();
                                         LocalTime nowNow = LocalTime.now(ZoneId.of(zone));
                                         if(nowNow.isBefore(startBlock)) {
                                             return null;
@@ -77,18 +79,19 @@ public class ProxyManager {
 
                                         if (httpObject instanceof HttpRequest && enabled) {
                                             HttpRequest request = (HttpRequest) httpObject;
+
                                             String uri = request.uri();
                                             String cleanUri = clean(uri);
-                                            log.debug("URI attempt: " + uri + ", cleaning it : " + cleanUri + " at " + nowNow);
+                                            log.debug("URI attempt: " + uri + ", cleaning it : " + cleanUri + " at " + nowNow + " from " + channel);
                                             if (cleanUri.endsWith(".io") || blocks.stream()
                                                     .filter(Category::isBlocked)
                                                     .map(Category::getSites)
                                                     .flatMap(Set::stream)
                                                     .anyMatch(x -> uri.toLowerCase().contains(x))) {
-                                                log.info("Blocking: " + cleanUri + " at " + nowNow);
+                                                log.info("Blocking: " + cleanUri + " at " + nowNow + " from " + channel);
                                                 return getBadGatewayResponse();
                                             } else {
-                                                log.debug("Letting threw: " + cleanUri + " at " + nowNow);
+                                                log.debug("Letting through: " + cleanUri + " at " + nowNow + " from " + channel);
                                                 blocks.stream().filter(c -> c.getName().equals("other")).findFirst().ifPresent(o ->
                                                 {
                                                     if(cleanUri != null) {

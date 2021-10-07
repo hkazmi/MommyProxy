@@ -10,4 +10,4 @@ category:
 logging:
   level:
     ROOT: INFO
-    com.gratig.proxy.littleproxy: DEBUG
+    com.gratig.proxy.littleproxy: INFO
