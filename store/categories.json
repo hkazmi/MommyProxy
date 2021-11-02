@@ -1,17 +1,1 @@
-[
-  {
-    "blocked": true,
-    "name": "videos",
-    "sites": ["youtube.com","vimeo.com","googlevideo.com"]
-  },
-  {
-    "blocked": true,
-    "name": "games",
-    "sites": []
-  },
-  {
-    "blocked": false,
-    "name": "other",
-    "sites": []
-  }
-]
+[{"blocked":true,"name":"videos","sites":["googlevideo.com","vimeo.com","arealme.com","youtube.com"]},{"blocked":true,"name":"games","sites":[]},{"blocked":false,"name":"other","sites":[]}]

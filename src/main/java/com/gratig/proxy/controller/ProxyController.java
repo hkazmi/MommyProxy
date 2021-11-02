@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -40,7 +41,7 @@ public class ProxyController {
     }
 
     @PostMapping("categories")
-    public void setCategories(@Parameter(hidden = true) @Value("${category.file.loc}") String fileLoc, List<Category> categories) throws IOException {
+    public void setCategories(@Parameter(hidden = true) @Value("${category.file.loc}") String fileLoc, @RequestBody List<Category> categories) throws IOException {
         List<Category> blocks = proxy.getBlocks();
         blocks.clear();
         blocks.addAll(categories);
