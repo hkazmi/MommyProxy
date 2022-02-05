@@ -53,6 +53,12 @@ public class ProxyController {
         proxy.setEnabled(enabled);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("startTime/{hour}/{min}")
+    public ResponseEntity startTime(@PathVariable("hour") int hour, @PathVariable("min") int min) {
+        proxy.setStartBlock(hour, min);
+        return ResponseEntity.ok().build();
+    }
     @GetMapping("save")
     public ResponseEntity save(@Parameter(hidden = true)  @Value("${category.file.loc}") String fileLoc) throws IOException {
         List<Category> blocks = proxy.getBlocks();

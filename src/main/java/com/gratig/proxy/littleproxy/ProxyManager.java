@@ -36,7 +36,8 @@ import java.util.*;
 public class ProxyManager {
     private final ObjectMapper mapper = new ObjectMapper();
     private boolean enabled=true;
-    private LocalTime startBlock = LocalTime.of(15,40);
+    private LocalTime startBlock = LocalTime.of(9,00);
+//    private LocalTime startBlock = LocalTime.of(15,40);
 
     public List<Category> getBlocks() {
         return blocks;
@@ -52,6 +53,9 @@ public class ProxyManager {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    public void setStartBlock(int hour, int min) {
+        startBlock = LocalTime.of(hour, min);
     }
 
     private List<Category> blocks = Collections.synchronizedList(new ArrayList<>());
@@ -117,7 +121,8 @@ public class ProxyManager {
     private String clean(String uri) {
         return Optional.ofNullable(uri)
                 .filter(StringUtils::isNotBlank)
-                .map(u -> u.substring(0,u.indexOf(':')))
+                .map(u -> u.replaceAll("^http://", ""))
+                .map(u -> u.substring(0,u.indexOf(':')>0?u.indexOf(':'):u.length()))
                 .orElse(null);
     }
 
